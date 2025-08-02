@@ -587,4 +587,33 @@ for vt in T do
   print "Sall:", Sall;
 end for;
 
+dat := Sall;
+
+isequal := function(dati,datj);
+  if not &and[dati[k] eq datj[k] : k in [1..4] cat [6]] then return false; end if;
+  F := NumberField(Polynomial(dati[6]));
+  ZZF := Integers(F);
+  DDi := ideal<ZZF | [F!c : c in dati[7]]>;
+  DDj := ideal<ZZF | [F!c : c in datj[7]]>;
+  NNi := ideal<ZZF | [F!c : c in dati[8]]>;
+  NNj := ideal<ZZF | [F!c : c in datj[8]]>;
+  for sigma in Automorphisms(F) do
+    sigmaDDj := ideal<ZZF | [sigma(c) : c in Generators(DDj)]>;
+    sigmaNNj := ideal<ZZF | [sigma(c) : c in Generators(NNj)]>;
+    if DDi eq sigmaDDj and NNi eq sigmaNNj then return true; end if;
+  end for;
+  return false;
+//  return DDi eq DDj and NNi eq NNj;
+end function;
+
+for j := #dat to 1 by -1 do
+  for i := 1 to j-1 do
+    dati := dat[i];
+    datj := dat[j];
+    if isequal(dat[i],dat[j]) then
+      print "removing pair i,j", dat[i], dat[j];
+      Remove(~dat, j);
+    end if;
+  end for;
+end for;
 
